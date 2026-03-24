@@ -1,0 +1,78 @@
+#pragma once 
+#include "../utils/noncopy.h"
+#include "InetAddress.h"
+#include "Callbacks.h"
+#include "Buffer.h"
+#include "../utils/Timestamp.h"
+#include <memory>
+#include <string>
+#include <atomic>
+class Channel; 
+class EventLoop;
+class Socket;
+
+class TcpConnection : NonCopyable ,public std::enable_shared_from_this<TcpConnection>{
+public:
+    TcpConnection(EventLoop *loop_,
+                  const std::string &name_
+                  int sockfd,
+                  const InetAddress& localAddr,
+                  const InetAddress& peerAddr);
+    ~TcpConnection();
+    EventLoop* getLoop() const {return loop_;}
+    //返回引用加const是为了防止不必要的拷贝
+    const std::string& name() const {return name_;}
+    const InetAddress& localAddress() const {return localAddr_;}
+    const InetAddress& peerAddress() const {return peerAddr_;}
+
+    bool connceted() const {return state_ == kConnected;}
+
+    void send(const void *message , int len);
+    void shutdown();
+
+
+    void setConnectionCallback(const ConnectionCallback &cb){connectionCallback_ = cb;}
+    void setMessageCallback(const MessageCallback &cb){messageCallback_ = cb;}
+    void setWriteCompleteCallback(const WriteCompleteCallback &cb){writeCompleteCallback_ = cb;}
+    void setHighWaterMarkCallback(const WriteCompleteCallback &cb,size_t highWaterMark)
+    {
+        writeCompleteCallback_ = cb;
+        highWaterMark_=highWaterMark;
+    )
+
+    void connectEstablished();
+    void connectDestroyed();
+
+private:
+    enum StatE{kDisconnected,kConnecting,kConnected,kDisconnecting};
+
+    void handleRead(Timestamp recieveTime);
+    void handleWrite();
+    void handleClose();
+    void handleError();
+
+    void sendInLoop(const void * message,size_t len);
+    void shutdownInLoop();
+    
+    EventLoop *loop_;
+    std::string name_;
+    std::atomic_int state_;
+    bool reading_;
+
+    std::unique_ptr<Socket> socket_;
+    std::unique_ptr<Channel> channel_;
+
+    const InetAddress localAddr_;
+    const InetAddress peerAddr_;
+    
+    ConnectionCallback connectionCallback_;
+    MessageCallback messageCallback_;   
+    WriteCompleteCallback writeCompleteCallback_;
+    HighWaterMarkCallback highWaterMarkCallback_;
+    CloseCallback closeCallback_; 
+
+    size_t highWaterMark_;
+
+    Buffer inputBuffer;
+    Buffer outputBuffer;
+};

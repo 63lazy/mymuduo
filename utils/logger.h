@@ -37,6 +37,7 @@
         char buffer[1024]; \
         std::snprintf(buffer, sizeof(buffer), "%s:%d:%s", __FILE__, __LINE__, __FUNCTION__); \
         logger.log(buffer); \
+        exit(-1); \
     } while (0)
 
 // 日志类型

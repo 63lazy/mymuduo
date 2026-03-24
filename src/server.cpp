@@ -272,7 +272,6 @@ public:
             int nfds=epoll_wait(epfd,events,1024,10000);
             for (int i = 0; i < nfds; i++)
             {
-
                 int readyfd=events[i].data.fd;
                 //服务端fd就绪说明有新连接在申请//
                 if (readyfd==serverfd)
