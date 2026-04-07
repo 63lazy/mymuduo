@@ -14,8 +14,8 @@ Channel::Channel(EventLoop* loop,int fd):
     index_(-1), 
     tied_(false)
 {};
-//tie_用来绑定channel和TcpConnection，防止channel被销毁时，TcpConnection还在使用
 
+//tie_用来绑定channel和TcpConnection
 //如果tied_为true说明此时运用channel的是TcpConnection,需要通过tie来判断对象是否还在使用
 //反之则是Acceptor或者EventLoop，无需进行生命周期的判断
 void Channel::tie(const std::shared_ptr<void>& obj){ 
@@ -33,6 +33,7 @@ void Channel::remove(){
 void Channel::handleEvent(Timestamp recieveTime){
     std::shared_ptr<void> guard;
     if(tied_){
+        //若tie_提升成功说明TcpConnection还存在 否则就不调用回调
         guard=tie_.lock();
         if(guard){
             handleEventWithGuard(recieveTime);

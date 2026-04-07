@@ -1,10 +1,13 @@
 #include "socket.h"
 #include "InetAddress.h"
 #include "../utils/logger.h"
+
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-
+#include <strings.h>
+#include <netinet/tcp.h>
+#include <sys/socket.h>
 Socket::~Socket(){
     close(sockfd_);
 }
@@ -52,4 +55,11 @@ void Socket::setReusePort(bool on){
 void Socket::setReuseAlive(bool on){
     int optval = on ?1:0;
     ::setsockopt(sockfd_,SOL_SOCKET,SO_KEEPALIVE,&optval,sizeof optval);
+}
+
+void Socket::setKeepAlive(bool on)
+{
+  int optval = on ? 1 : 0;
+  ::setsockopt(sockfd_, SOL_SOCKET, SO_KEEPALIVE,
+               &optval, static_cast<socklen_t>(sizeof optval));
 }

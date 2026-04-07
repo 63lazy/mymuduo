@@ -1,0 +1,2 @@
+为什么TcpConnection但是handlewrite的时候需要判断是否可读，并且读完还需要disableWriting，而handleread的时候就不需要:
+写事件是“主动”的，只要内核缓冲区不满，LT 模式就会一直触发；读事件是“被动”的，只有对端发数据，内核缓冲区不为空时才会触发。

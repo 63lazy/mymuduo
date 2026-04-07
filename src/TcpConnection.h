@@ -27,7 +27,7 @@ public:
 
     bool connceted() const {return state_ == kConnected;}
 
-    void send(const void *message , int len);
+    void send(const std::string &buf);
     void shutdown();
 
 
@@ -40,18 +40,22 @@ public:
         highWaterMark_=highWaterMark;
     )
 
+    //连接建立
     void connectEstablished();
+    //连接销毁
     void connectDestroyed();
 
+    
 private:
     enum StatE{kDisconnected,kConnecting,kConnected,kDisconnecting};
+    void setState(StatE state){state_= state;}
 
     void handleRead(Timestamp recieveTime);
     void handleWrite();
     void handleClose();
     void handleError();
 
-    void sendInLoop(const void * message,size_t len);
+    void sendInLoop(const void * data,size_t len);
     void shutdownInLoop();
     
     EventLoop *loop_;
@@ -65,6 +69,7 @@ private:
     const InetAddress localAddr_;
     const InetAddress peerAddr_;
     
+    //连接改变的回调，包括建立连接和断开连接
     ConnectionCallback connectionCallback_;
     MessageCallback messageCallback_;   
     WriteCompleteCallback writeCompleteCallback_;
@@ -73,6 +78,6 @@ private:
 
     size_t highWaterMark_;
 
-    Buffer inputBuffer;
+    Buffer inputBuffer_;
     Buffer outputBuffer;
 };

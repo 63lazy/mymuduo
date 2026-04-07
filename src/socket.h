@@ -12,7 +12,7 @@ public:
     void listen();
     int accept(InetAddress *peeraddr);
 
-    void shutdownWriter();
+    void shutdownWrite();
 
     void setTcpNonDelay(bool on);
     void setReuseAddr(bool on);
