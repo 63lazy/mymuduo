@@ -18,6 +18,9 @@ public:
     void setReuseAddr(bool on);
     void setReusePort(bool on);
     void setReuseAlive(bool on);
+    void setKeepAlive(bool on);
+
+    static int getSocketError(int sockfd);
 private:
     const int sockfd_;
 };

@@ -13,30 +13,31 @@ Socket::~Socket(){
 }
 void Socket::bindAddress(const InetAddress &loacaladdr){
     if(0!=::bind(sockfd_,(sockaddr*)loacaladdr.getSockAddrInet(),sizeof(sockaddr_in))){
-        LOG_FATAL("bind socket:%d fail\n",sockfd_); 
+        LOG_FATAL("bind socket:%d fail",sockfd_); 
     }
 }
 void Socket::listen(){
     if(0!=::listen(sockfd_,1024))
     {
-        LOG_FATAL("listen socket:%d fail\n",sockfd_); 
+        LOG_FATAL("listen socket:%d fail",sockfd_); 
     }
 }
 int Socket::accept(InetAddress *peeraddr){
     sockaddr_in addr;
     socklen_t len;
-    bzero(addr,sizeof addr);
+    bzero(&addr,sizeof(addr));
     int connfd = ::accept(sockfd_,(sockaddr*)&addr,&len);
     if(connfd>=0){
-        peeraddr->setSockAddr(addr)
+        peeraddr->setSockAddr(addr);
     }
     return connfd;
 }
 
-void Socket::shutdownWriter(){
+//TcpConnection::shutdownInLoop触发
+void Socket::shutdownWrite(){
     if(::shutdown(sockfd_,SHUT_WR)<0)
     {
-        LOG_ERROR("shutdownwrite error")
+        LOG_ERROR("shutdownwrite error");
     }
 }
 
@@ -62,4 +63,20 @@ void Socket::setKeepAlive(bool on)
   int optval = on ? 1 : 0;
   ::setsockopt(sockfd_, SOL_SOCKET, SO_KEEPALIVE,
                &optval, static_cast<socklen_t>(sizeof optval));
+}
+
+
+int Socket::getSocketError(int sockfd)
+{
+  int optval;
+  socklen_t optlen = static_cast<socklen_t>(sizeof optval);
+
+  if (::getsockopt(sockfd, SOL_SOCKET, SO_ERROR, &optval, &optlen) < 0)
+  {
+    return errno;
+  }
+  else
+  {
+    return optval;
+  }
 }

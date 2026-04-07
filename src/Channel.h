@@ -11,7 +11,6 @@ public:
     using ReadEventCallback=std::function<void(Timestamp)>;
 
     Channel(EventLoop* loop,int fd);
-    ~Channel();
     //fd得到poller通知通过调用相应的回调函数处理事件//
     void handleEvent(Timestamp receiveTime);
     //设置回调函数//
@@ -23,7 +22,7 @@ public:
     void tie(const std::shared_ptr<void>&);
     int fd() const{return fd_;}
     int events() const{return events_;}
-    int set_revents(int revt){revents_=revt;}
+    void set_revents(int revt){revents_=revt;}
 
     //设置fd的事件状态//
     void enableReading(){events_|=kReadEvent;update();}

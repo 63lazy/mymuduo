@@ -5,13 +5,14 @@
 #include "../utils/thread.h"
 #include <functional>
 #include <mutex>
+#include <string>
 #include <condition_variable>
 class EventLoop;
 class EventLoopThread : NonCopyable{
 public:
     using ThreadInitCallback = std::function<void(EventLoop*)>;
-    EventLoopThread(ThreadInitCallback const &cb=ThreadInitCallback(),
-        const std::string &name=string());
+    EventLoopThread(const ThreadInitCallback &cb = ThreadInitCallback(),
+        const std::string &name=std::string());
     ~EventLoopThread();
     EventLoop* startLoop();
 private:
@@ -23,4 +24,4 @@ private:
     std::mutex mutex_;
     std::condition_variable cond_;
     ThreadInitCallback callback_;
-}
+};

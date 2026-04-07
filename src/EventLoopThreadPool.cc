@@ -9,16 +9,15 @@ EventLoopThreadPool::EventLoopThreadPool(EventLoop* baseloop, const std::string 
     ,next_(0)
 {
 }
-void EventLoopThreadPool::setThreadNum(int threadNum){numThreads_=threadNum;}
 void EventLoopThreadPool::start(const ThreadInitCallback &cb){
     started_=true;
     for(int i=0;i<numThreads_;i++){
         char name_buf[name_.size()+32];
         snprintf(name_buf,sizeof(name_buf),"%s-%d",name_.c_str(),i);
         EventLoopThread *t= new EventLoopThread(cb,name_buf);
-        threads_.push_back(unique_ptr<EventLoopThread>(t));
+        threads_.push_back(std::unique_ptr<EventLoopThread>(t));
         //startLoop创建并返回一个EventLoop的地址//
-        loops_.push_back(t->startLoop())
+        loops_.push_back(t->startLoop());
     }
     //整个服务端只有一个线程，运行这baseloop_
     if(numThreads_==0){
@@ -31,7 +30,7 @@ EventLoop* EventLoopThreadPool::getNextLoop(){
 
     if(!loops_.empty())
     {
-        loop=loops_[next_]
+        loop=loops_[next_];
         ++next_;
         if(next_>=loops_.size()){next_=0;}
     }
@@ -43,6 +42,6 @@ std::vector<EventLoop*> EventLoopThreadPool::getAllLoops(){
         return std::vector<EventLoop*>(1,baseloop_);
     }
     else{
-        return loops_
+        return loops_;
     }
 }

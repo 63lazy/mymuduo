@@ -20,15 +20,15 @@ Thread::~Thread(){
 }
 void Thread::start(){
     started_=true;
-    sem_t sem_;
-    sem_init(&sem_,false,0);
+    auto sem=std::make_shared<sem_t>(); //分配堆上的内存 防止主线程结束过快 sem_t被快速回收
+    sem_init(sem.get(),false,0);
     //add 最好用[self = shared_from_this()]
-    thread_=std::make_shared<std::thread>([this](){
+    thread_=std::make_shared<std::thread>([this,sem](){//捕获智能指针增加引用计数
         tid_=CurrentThread::tid();
-        sem_post(&sem_);
+        sem_post(sem.get());
         func_();
     });
-    sem_wait(&sem_);
+    sem_wait(sem.get());
 }
 void Thread::join(){
     joined_=true;

@@ -2,7 +2,7 @@
 #include "logger.h"
 #include "Poller.h"
 #include "Channel.h"
-#include <sys/epollfd.h>
+#include <sys/eventfd.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
@@ -15,18 +15,18 @@ const int kPollTimeMs = 10000;
 int createEventFd(){
     int evtfd = ::eventfd(0,EFD_NONBLOCK | EFD_CLOEXEC);
     if(evtfd < 0){
-        LOG_FATAL("eventfd error:%d \n",errno);
+        LOG_FATAL("eventfd error:%d ",errno);
     }
     return evtfd;
 }
 EventLoop::EventLoop()
     :looping_(false),
     quit_(false),
-    callingPendingFunctors_(false),
     threadId_(CurrentThread::tid()),
     poller_(Poller::newDefaultPoller(this)),
     wakeupFd_(createEventFd()),
-    wakeupChannel_(new Channel(this,wakeupFd_))
+    wakeupChannel_(new Channel(this,wakeupFd_)),
+    callingPendingFunctors_(false)
 { 
     LOG_DEBUG("EventLoop created %p in thread %d",this,threadId_);
     if(t_loopInThisThread){
@@ -37,7 +37,7 @@ EventLoop::EventLoop()
     }
 
     //设置wakeupChannel的事件类型为可读事件
-    wakeupChannel_->setReadCallback([this](){
+    wakeupChannel_->setReadCallback([this](Timestamp t){
         this->handleReading();
     });
     //设置wakeupChannel的事件类型为可读事件

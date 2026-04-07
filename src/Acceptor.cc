@@ -1,18 +1,24 @@
 #include "Acceptor.h"
+#include "InetAddress.h"
+#include "../utils/Timestamp.h"
 #include "../utils/logger.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <error.h>
 #include <unistd.h>
 
-namespace{//匿名空间保证createNonblocking函数只能在本文件中被调用
-    int createNonblocking(){
-        int sockfd = ::socket(AF_INET ,SOCK_STREAM | SOCK_NOBLOCK | SOCK_CLOEXEC,0);
-        if(sockfd<0){
-            LOF_FATAL("%s:%s:%d listen socket create err:%d \n",__FILE__,__FUNCTION__,__LINE__,error);
+namespace
+{//匿名空间保证createNonblocking函数只能在本文件中被调用
+    int createNonblocking()
+    {
+        int sockfd = ::socket(AF_INET ,SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC,0);
+        if(sockfd<0)
+        {
+            LOG_FATAL("%s:%s:%d listen socket create err:%d \n",__FILE__,__FUNCTION__,__LINE__,errno);
         }
+        return sockfd;
     }
-    return sockfd;
+    
 }
 
 Acceptor::Acceptor(EventLoop *loop,const InetAddress &ListenAddr,bool reuseport)
@@ -24,9 +30,9 @@ Acceptor::Acceptor(EventLoop *loop,const InetAddress &ListenAddr,bool reuseport)
     acceptSocket_.setReusePort(true);
     acceptSocket_.setReusePort(true);
     acceptSocket_.bindAddress(ListenAddr);//绑定socket
-    acceptChannel_.setReadCallback([this](){
+    acceptChannel_.setReadCallback([this](Timestamp t){
         handleRead();
-    })
+    });
 }
 Acceptor::~Acceptor(){
     acceptChannel_.disableAll();
@@ -51,10 +57,11 @@ void Acceptor::handleRead(){
             ::close(connfd);
         }
     }
-    else{
-        LOF_ERROR("%s:%s:%d accept socket err:%d \n",__FILE__,__FUNCTION__,__LINE__,error);
-        if(error==EMFILE){
-            LOF_ERROR("%s:%s:%d sockfd reached limit \n",__FILE__,__FUNCTION__,__LINE__);
+    else
+    {
+        LOG_ERROR("%s:%s:%d accept socket err:%d \n",__FILE__,__FUNCTION__,__LINE__,errno);
+        if(errno==EMFILE){
+            LOG_ERROR("%s:%s:%d sockfd reached limit \n",__FILE__,__FUNCTION__,__LINE__);
         }
     }
 }

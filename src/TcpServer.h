@@ -7,6 +7,9 @@
 #include "InetAddress.h"
 #include "Callbacks.h"
 #include "EventLoopThreadPool.h"
+#include "TcpConnection.h"
+#include "../utils/Buffer.h"
+
 #include <string>
 #include <functional>
 #include <memory>
@@ -21,28 +24,30 @@ public:
         kReusePort,
     };
 
-    TcpServer(EventLoop *loop,const InetAddress &listenAddr,Option option=kNoReusePort);
-    ~TcpServer;
+    TcpServer(EventLoop *loop,
+              const InetAddress &listenAddr,
+              const std::string &nameArg,
+              Option option=kNoReusePort);
+    ~TcpServer();
 
-    void setThreadNum(int numThreads){threadpool_.setThreadNum(numThreads);}
+    void setThreadNum(int numThreads){threadpool_->setThreadNum(numThreads);}
     void setThreadInitCallback(const ThreadInitCallback &cb){threadInitCallback_ = cb;}
     void setConnectionCallback(const ConnectionCallback &cb){connectionCallback_ = cb;}
     void setMessageCallback(const MessageCallback &cb){messageCallback_ = cb;}
     void setWriteCompleteCallback(const WriteCompleteCallback &cb){writeCompleteCallback_ = cb;}
     
-
     void start(); //开启acceptor的listen
 private:
     void newConnection(int sockfd,const InetAddress &peerAddr);
     void removeConnection(const TcpConnectionPtr &conn);
-    void removeConnectionInLoop(const TcpConnectionPtr &conn)
+    void removeConnectionInLoop(const TcpConnectionPtr &conn);
 
     
     using ConnectionMap= std::unordered_map<std::string,TcpConnectionPtr>;
 
     EventLoop *loop_;
     const std::string name_;
-    const std::string ipPort;
+    const std::string ipPort_;
     std::unique_ptr<Acceptor> acceptor_; 
     std::shared_ptr<EventLoopThreadPool> threadpool_;
 
@@ -52,9 +57,9 @@ private:
 
     ThreadInitCallback threadInitCallback_;          //loop线程初始化的回调
 
-    std::atomic_int started;
+    std::atomic_int started_{0};
 
     int nexConnId_;
 
-    ConnectionMap connetions_;                       //保存所有的连接
-}
+    ConnectionMap connections_;                       //保存所有的连接
+};

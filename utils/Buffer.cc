@@ -1,5 +1,7 @@
 #include "Buffer.h"
 #include <sys/uio.h>
+const size_t Buffer::kCheapPrepend_=8;
+const size_t Buffer::kInitiaSize_=1024;
 ssize_t Buffer::readFd(int fd, int *saveError){
     //read读到的是流式数据
     //extrabuf用于防止多次扩容 先将长数据一起存储在栈上 之后如果要扩容再一起扩容
@@ -14,9 +16,9 @@ ssize_t Buffer::readFd(int fd, int *saveError){
     vec[1].iov_len=sizeof(extrabuf);
 
     const int iovcnt = (writable < sizeof extrabuf) ? 2 : 1;
-    const ssize_t n=::readv(fd,&vec,iovcnt);
+    const ssize_t n=::readv(fd,vec,iovcnt);
     if(n<0){
-        *saveError=error;
+        *saveError=errno;
     }
     else if(n<=writable){ //buffer缓冲区足够
         writerIndex_+=n;

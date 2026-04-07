@@ -16,7 +16,7 @@ public:
     //统一接口//
     virtual void updateChannel(Channel* channel)=0;
     virtual void removeChannel(Channel* channel)=0;
-    virtual bool hasChannel(Channel* channel)=0;
+    virtual bool hasChannel(Channel* channel)const;
 
     //EventLoop通过该接口获取IO复用的具体实现 
     static Poller* newDefaultPoller(EventLoop* loop);

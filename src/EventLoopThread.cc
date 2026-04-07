@@ -1,10 +1,10 @@
 #include "EventLoopThread.h"
 
-EventLoopThread::EventLoopThread(ThreadInitCallback const ThreadInitCallback &cb,
+EventLoopThread::EventLoopThread(const ThreadInitCallback &cb,
     const std::string &name)
     :loop_(nullptr)
     ,exit_(false)
-    ,thread_([this,cb](){
+    ,thread_([this](){
         threadFunc();
     },name)
     ,callback_(std::move(cb))
@@ -19,18 +19,17 @@ EventLoopThread::~EventLoopThread(){
     }
 }
 EventLoop* EventLoopThread::startLoop(){
-    thread_.started_=true;
     thread_.start();
+    //用栈上的loop来中转，防止在锁外操作返回loop_
     EventLoop* loop = nullptr;
     {
-        unique_lock<mutex> lock(mutex_);
+        std::unique_lock<std::mutex> lock(mutex_);
         //保证在创建EventLoop对象前，线程已经创建完成//
         while(loop_==nullptr){
             cond_.wait(lock);
         }
+        loop=loop_;
     }
-    loop->loop();
-    //退出循环说明执行了quit函数
     return loop;
 }
 //EventLoopThread线程函数，创建EventLoop对象
@@ -41,9 +40,13 @@ void EventLoopThread::threadFunc(){
         callback_(&loop);
     }
     {
-        unique_lock<std::mutex> lock(mutex_);
+        std::unique_lock<std::mutex> lock(mutex_);
         loop_=&loop;
         cond_.notify_one();
     }
-    return loop_;
+    loop.loop();
+    
+    //退出循环说明执行了quit函数
+    std::unique_lock<std::mutex> lock(mutex_);
+    loop_=nullptr;
 }

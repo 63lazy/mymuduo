@@ -21,13 +21,12 @@ public:
     const std::string Name()const{return name_;}
 
 private:
-    vector<EventLoop>
     EventLoop* baseloop_;
     std::string name_;
     bool started_;
     int numThreads_;
     int next_;
-    std::vector<unique_ptr<EventLoopThread>> threads_;
+    std::vector<std::unique_ptr<EventLoopThread>> threads_;
     //通过调用EventLoopThread的startLoop函数，获取EventLoop对象的指针，添加到loops_中，
     std::vector<EventLoop*> loops_;
-}
+};

@@ -4,6 +4,9 @@ project(utils)
 set(UTILS_SOURCES
     logger.cc
     Timestamp.cc
+    CurrentThread.cc
+    thread.cc
+    Buffer.cc
 )
 
 add_library(utils STATIC ${UTILS_SOURCES})

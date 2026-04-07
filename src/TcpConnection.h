@@ -2,7 +2,7 @@
 #include "../utils/noncopy.h"
 #include "InetAddress.h"
 #include "Callbacks.h"
-#include "Buffer.h"
+#include "../utils/Buffer.h"
 #include "../utils/Timestamp.h"
 #include <memory>
 #include <string>
@@ -14,7 +14,7 @@ class Socket;
 class TcpConnection : NonCopyable ,public std::enable_shared_from_this<TcpConnection>{
 public:
     TcpConnection(EventLoop *loop_,
-                  const std::string &name_
+                  const std::string &name_,
                   int sockfd,
                   const InetAddress& localAddr,
                   const InetAddress& peerAddr);
@@ -25,7 +25,7 @@ public:
     const InetAddress& localAddress() const {return localAddr_;}
     const InetAddress& peerAddress() const {return peerAddr_;}
 
-    bool connceted() const {return state_ == kConnected;}
+    bool connected() const {return state_ == kConnected;}
 
     void send(const std::string &buf);
     void shutdown();
@@ -38,7 +38,9 @@ public:
     {
         writeCompleteCallback_ = cb;
         highWaterMark_=highWaterMark;
-    )
+    }
+
+    void setCloseCallback(const CloseCallback& cb){ closeCallback_ = cb; }
 
     //连接建立
     void connectEstablished();
@@ -47,8 +49,8 @@ public:
 
     
 private:
-    enum StatE{kDisconnected,kConnecting,kConnected,kDisconnecting};
-    void setState(StatE state){state_= state;}
+    enum StateE{kDisconnected,kConnecting,kConnected,kDisconnecting};
+    void setState(StateE state){state_= state;}
 
     void handleRead(Timestamp recieveTime);
     void handleWrite();
@@ -79,5 +81,5 @@ private:
     size_t highWaterMark_;
 
     Buffer inputBuffer_;
-    Buffer outputBuffer;
+    Buffer outputBuffer_;
 };

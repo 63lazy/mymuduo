@@ -5,10 +5,11 @@
 #include <functional>
 class EventLoop;
 class InetAddress;
-class Acceptor : NonCopyable{
+class Acceptor : NonCopyable
+{
 public:
     using NewConnectionCallback=std::function<void(int sockfd,const InetAddress&)> ;
-    Acceptor(EventLoop *loop,const EventLoop &ListenAddr,bool reuseport);
+    Acceptor(EventLoop *loop,const InetAddress &ListenAddr,bool reuseport);
     ~Acceptor();
     void setNewConnectionCallback(const NewConnectionCallback &cb){
         newConnectionCallback_=std::move(cb);
