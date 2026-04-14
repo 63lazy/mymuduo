@@ -1,8 +1,8 @@
 #pragma once
-#include "../utils/noncopy.h"
-#include "../utils/thread.h"
+#include "noncopy.h"
+#include "thread.h"
 #include "EventLoop.h"
-#include "../utils/thread.h"
+#include "thread.h"
 #include <functional>
 #include <mutex>
 #include <string>

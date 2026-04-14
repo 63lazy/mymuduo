@@ -1,9 +1,9 @@
 #include "TcpConnection.h"
-#include "../utils/logger.h"
+#include "logger.h"
 #include "EventLoop.h"
 #include "Channel.h"
 #include "socket.h"
-#include "../utils/logger.h"
+#include "logger.h"
 #include <functional>
 #include <errno.h>
 #include <unistd.h>
@@ -147,7 +147,6 @@ void TcpConnection::connectEstablished(){
     setState(kConnected);
     channel_->tie(shared_from_this());
     channel_->enableReading();
-
     //新连接建立，执行回调
     connectionCallback_(shared_from_this());
 }

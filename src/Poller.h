@@ -1,8 +1,8 @@
 #pragma once
-#include "../utils/noncopy.h"
+#include "noncopy.h"
 #include <vector>
 #include <unordered_map>
-#include "../utils/Timestamp.h"
+#include "Timestamp.h"
 class Channel;
 class EventLoop;
 

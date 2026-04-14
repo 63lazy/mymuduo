@@ -1,6 +1,6 @@
 #include "EPollPoller.h"
-#include "../utils/logger.h"
-#include "channel.h"
+#include "logger.h"
+#include "Channel.h"
 #include <errno.h>
 #include <unistd.h>
 #include <strings.h>

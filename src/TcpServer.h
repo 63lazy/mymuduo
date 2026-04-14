@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../utils/noncopy.h"
+#include "noncopy.h"
 #include "Channel.h"
 #include "EventLoop.h"
 #include "Acceptor.h"
@@ -8,7 +8,7 @@
 #include "Callbacks.h"
 #include "EventLoopThreadPool.h"
 #include "TcpConnection.h"
-#include "../utils/Buffer.h"
+#include "Buffer.h"
 
 #include <string>
 #include <functional>

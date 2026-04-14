@@ -1,7 +1,7 @@
 #include "Acceptor.h"
 #include "InetAddress.h"
-#include "../utils/Timestamp.h"
-#include "../utils/logger.h"
+#include "Timestamp.h"
+#include "logger.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <error.h>

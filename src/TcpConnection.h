@@ -1,9 +1,9 @@
 #pragma once 
-#include "../utils/noncopy.h"
+#include "noncopy.h"
 #include "InetAddress.h"
 #include "Callbacks.h"
-#include "../utils/Buffer.h"
-#include "../utils/Timestamp.h"
+#include "Buffer.h"
+#include "Timestamp.h"
 #include <memory>
 #include <string>
 #include <atomic>

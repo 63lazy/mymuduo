@@ -1,8 +1,8 @@
 #pragma once
 #include <functional>
-#include "../utils/noncopy.h"
-#include "../utils/Timestamp.h"
-#include "../utils/CurrentThread.h"
+#include "noncopy.h"
+#include "Timestamp.h"
+#include "CurrentThread.h"
 #include <vector>
 #include <atomic>
 #include <memory>

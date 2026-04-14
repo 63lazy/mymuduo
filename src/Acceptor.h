@@ -1,5 +1,5 @@
 #pragma once
-#include "../utils/noncopy.h"
+#include "noncopy.h"
 #include "socket.h"
 #include "Channel.h"
 #include <functional>

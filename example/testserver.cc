@@ -1,5 +1,5 @@
-#include <mymuduo/src/TcpServer.h>
-#include <mymuduo/utils/logger.h>
+#include <mymuduo/TcpServer.h>
+#include <mymuduo/logger.h>
 #include <string>
 
 class EchoServer{

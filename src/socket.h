@@ -1,5 +1,5 @@
 #pragma once
-#include "../utils/noncopy.h"
+#include "noncopy.h"
 class InetAddress;
 class Socket : NonCopyable{
 public:
