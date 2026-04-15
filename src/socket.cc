@@ -25,7 +25,7 @@ void Socket::listen(){
 int Socket::accept(InetAddress *peeraddr){
     sockaddr_in addr;
     socklen_t len=sizeof(struct addr);
-    bzero(&addr,sizeof(addr));
+    bzero(&addr,sizeof(socklen_t));
     int connfd = ::accept(sockfd_,(sockaddr*)&addr,&len);
     if(connfd>=0){
         peeraddr->setSockAddr(addr);
