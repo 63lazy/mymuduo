@@ -66,7 +66,7 @@ void TcpServer::newConnection(int sockfd,const InetAddress &peerAddr)
     //通过sockfd获取其绑定的本机ip地址和端口信息
     sockaddr_in local;
     ::bzero(&local,sizeof(local));
-    socklen_t addrlen=sizeof(local);
+    socklen_t addrlen=sizeof(struct sockaddr_in);
     if(::getsockname(sockfd,(sockaddr*)&local,&addrlen)<0)
     {
         LOG_ERROR("TcpServer::getLocalAddr");
