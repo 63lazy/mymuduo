@@ -21,7 +21,7 @@ public:
             onMessage(conn,buf,time);
         });
         //设置线程数
-        server_.setThreadNum(3);
+        server_.setThreadNum(1);
     }
 
     void start(){
