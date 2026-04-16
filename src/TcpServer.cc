@@ -86,8 +86,8 @@ void TcpServer::newConnection(int sockfd,const InetAddress &peerAddr)
     conn->setWriteCompleteCallback(writeCompleteCallback_);
 
     //设置了如何关闭连接的回调
-    conn->setCloseCallback([this,conn](const std::shared_ptr<TcpConnection> &c){
-        removeConnection(conn);
+    conn->setCloseCallback([this](const std::shared_ptr<TcpConnection> &c){
+        removeConnection(c);
     });
     ioloop->runInLoop([conn](){
         conn->connectEstablished();

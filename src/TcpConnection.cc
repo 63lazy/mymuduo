@@ -63,8 +63,8 @@ void TcpConnection::send(const std::string &buf)
             sendInLoop(buf.c_str(),buf.size());
         }
         //跨线程会直接调用queueInLoop保证线程安全
-        else{
-            loop_->runInLoop([this,buf](){
+        else{//捕获shared_from_this延长TcpConnection的生命周期，防止TcpConnection 在任务排队期间被销毁
+            loop_->runInLoop([this,buf,guard=shared_from_this()](){
                 sendInLoop(buf.c_str(),buf.size());
             });
         }
@@ -82,7 +82,7 @@ void TcpConnection::sendInLoop(const void *data, size_t len){
         return ;
     }
     //readableBytes()==0表示缓冲区没有待发送数据
-    if(channel_->IsWriteEnabled() && outputBuffer_.readableBytes()==0){
+    if(!channel_->IsWriteEnabled() && outputBuffer_.readableBytes()==0){
         nwrote=::write(channel_->fd(),data,len);
         if(nwrote>=0){
             remaining=len - nwrote;

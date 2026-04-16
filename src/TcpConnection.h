@@ -36,7 +36,7 @@ public:
     void setWriteCompleteCallback(const WriteCompleteCallback &cb){writeCompleteCallback_ = cb;}
     void setHighWaterMarkCallback(const WriteCompleteCallback &cb,size_t highWaterMark)
     {
-        writeCompleteCallback_ = cb;
+        highWaterMarkCallback_ = cb;
         highWaterMark_=highWaterMark;
     }
 
