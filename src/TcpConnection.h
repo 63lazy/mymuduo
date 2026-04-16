@@ -34,7 +34,7 @@ public:
     void setConnectionCallback(const ConnectionCallback &cb){connectionCallback_ = cb;}
     void setMessageCallback(const MessageCallback &cb){messageCallback_ = cb;}
     void setWriteCompleteCallback(const WriteCompleteCallback &cb){writeCompleteCallback_ = cb;}
-    void setHighWaterMarkCallback(const WriteCompleteCallback &cb,size_t highWaterMark)
+    void setHighWaterMarkCallback(const HighWaterMarkCallback &cb,size_t highWaterMark)
     {
         highWaterMarkCallback_ = cb;
         highWaterMark_=highWaterMark;
