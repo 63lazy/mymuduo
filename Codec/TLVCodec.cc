@@ -15,12 +15,12 @@ void TLVCodec::onTLVmessage(const TcpConnectionPtr& conn,Buffer* buf,Timestamp t
         MessageHeader header;
 
         std::memcpy(&header,buf->peek(),sizeof(MessageHeader));
-        /*
+        
         if(ntohl(header.magic)!=PROTOCOL_MAGIC){
             LOG_ERROR("Protocol Magic Error, closing connection");
             conn->shutdown();
             break;
-        }*/
+        }
         uint32_t len=ntohl(header.length);
         uint16_t type = ntohs(header.type);
         //如果长度不够一个数据包则等待下一次epollin触发
