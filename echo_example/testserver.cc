@@ -30,6 +30,10 @@ public:
 private:
     void onConnection(const TcpConnectionPtr &conn)
     {
+        std::weak_ptr<TcpConnection> weak_conn(conn);
+        loop_->runEvery(60.0,[this,weak_conn](){
+            kickIdleConnection(weak_conn);
+        });
         if(conn->connected()){
             LOG_INFO("connection UP :%s",conn->peerAddress().toIpPort().c_str());
         }
@@ -37,7 +41,19 @@ private:
             LOG_INFO("connection DOWN :%s",conn->peerAddress().toIpPort().c_str());
         }
     }
-
+    void kickIdleConnection(std::weak_ptr<TcpConnection> weakConn) {
+        auto conn = weakConn.lock(); // 尝试提升
+        if (conn) {
+            int64_t now = Timestamp::now().microSecondsSinceEpoch();
+            int64_t lastActive = conn->lastReceiveTime(); // 你在 handleRead 里更新的变量
+            
+            if (now - lastActive > 60 * 1000 * 1000) { // 真正超过 60s 没动静
+                LOG_INFO("Idle timeout, kick connection: %s", conn->peerAddress().toIpPort().c_str());
+                conn->shutdown();
+            }
+            // 如果没超时，由于是 runEvery，60 秒后它会自动再次进来检查
+        }
+    }
     void onMessage(const TcpConnectionPtr &conn,
                    Buffer* buf, 
                    Timestamp time)
@@ -47,7 +63,7 @@ private:
              msg.size(), 
              conn->peerAddress().toIpPort().c_str(),
              msg.c_str());
-        conn->send(msg);example/testserver
+        conn->send(msg);
         //conn->shutdown();
     }
 

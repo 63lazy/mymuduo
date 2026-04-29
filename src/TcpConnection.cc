@@ -32,7 +32,8 @@ TcpConnection::TcpConnection(EventLoop *loop,
                   channel_(new Channel(loop,sockfd)),
                   localAddr_(localAddr),
                   peerAddr_(peerAddr),
-                  highWaterMark_(64*1024*1024) //64M到达水位线
+                  highWaterMark_(64*1024*1024), //64M到达水位线
+                  lastReceiveTime_(Timestamp::now().microSecondsSinceEpoch())
 {
     //给channel设置相应的回调函数
     channel_->setReadCallback([this](Timestamp recieveTime){
@@ -164,6 +165,8 @@ void TcpConnection::handleRead(Timestamp recieveTime){
     int savedError = 0;
     ssize_t n= inputBuffer_.readFd(socket_->fd(), &savedError);
     if(n>0){
+        //更新最近活跃时间(定时器)
+        lastReceiveTime_.store(recieveTime.microSecondsSinceEpoch());
         //已建立连接的用户，有可读事件发生了，调用用户传入的回调操作
         messageCallback_(shared_from_this(),&inputBuffer_,recieveTime);
     }
@@ -186,6 +189,7 @@ void TcpConnection::handleWrite(){
         if(n>0)
         {
             outputBuffer_.retrieve(n);
+            //如果缓冲区数据发完了
             if(outputBuffer_.readableBytes()==0)
             {
                 channel_->disableWriting();

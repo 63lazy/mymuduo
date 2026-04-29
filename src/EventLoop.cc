@@ -24,6 +24,7 @@ EventLoop::EventLoop()
     quit_(false),
     threadId_(CurrentThread::tid()),
     poller_(Poller::newDefaultPoller(this)),
+    timerQueue_(new TimerQueue(this)),
     wakeupFd_(createEventFd()),
     wakeupChannel_(new Channel(this,wakeupFd_)),
     callingPendingFunctors_(false)

@@ -3,6 +3,8 @@
 #include "noncopy.h"
 #include "Timestamp.h"
 #include "CurrentThread.h"
+#include "TimerQueue.h"
+#include "TimerId.h"
 #include <vector>
 #include <atomic>
 #include <memory>
@@ -22,7 +24,23 @@ public:
 
     void runInLoop(Functor cb); //在当前loop中执行cb回调操作
     void queueInLoop(Functor cb); //将cb回调操作加入到队列中
-
+        
+    //在指定的绝对时间点执行
+    TimerId runAt(Timestamp time,TimerCallback cb){
+        return timerQueue_->addTimer(std::move(cb), time, 0.0);
+    }
+    //在经过指定的延迟秒数后执行
+    TimerId runAfter(double delay,TimerCallback cb){
+        Timestamp time(addTime(Timestamp::now(),delay));
+        return runAt(time,std::move(cb));
+    }
+    //每隔指定的秒数重复执行
+    TimerId runEvery(double interval,TimerCallback cb){
+        //设置第一次触发时间为now+interval
+        Timestamp time(addTime(Timestamp::now(), interval));
+        // 传入 interval，TimerQueue内部handleRead会处理为 repeat逻辑
+        return timerQueue_->addTimer(std::move(cb),time,interval);
+    }
     void wakeup();
 
     void updateChannel(Channel* channel); //更新channel
@@ -44,6 +62,7 @@ private:
     const pid_t threadId_; //记录当前loop所在线程的id
     Timestamp pollReturnTime_; //poller返回发生事件的channels的时间点
     std::unique_ptr<Poller> poller_;
+    std::unique_ptr<TimerQueue> timerQueue_;
 
     int wakeupFd_; //用于唤醒subloop所在线程的fd(轮询的方式)
     std::unique_ptr<Channel> wakeupChannel_; //用于处理wakeupFd_的channel

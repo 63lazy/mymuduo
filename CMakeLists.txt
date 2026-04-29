@@ -23,7 +23,6 @@ include_directories(${CMAKE_SOURCE_DIR}/src)
 add_subdirectory(utils)
 
 # 创建网络核心库：改为 SHARED (动态库)
-# 这里建议将名字从 network 改为 mymuduo，以匹配你那个脚本的逻辑
 add_library(mymuduo SHARED 
     src/InetAddress.cc 
     src/EventLoop.cc 
@@ -37,7 +36,8 @@ add_library(mymuduo SHARED
     src/TcpConnection.cc 
     src/EventLoopThread.cc 
     src/EventLoopThreadPool.cc 
-    src/Callbacks.cc
+    src/Timer.cc
+    src/TimerQueue.cc
 )
 
 # 链接选项

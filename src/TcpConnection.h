@@ -47,6 +47,8 @@ public:
     //连接销毁
     void connectDestroyed();
 
+    //获取最后一次活跃的时间戳
+    int64_t lastReceiveTime() const { return lastReceiveTime_.load(); }
     
 private:
     enum StateE{kDisconnected,kConnecting,kConnected,kDisconnecting};
@@ -82,4 +84,6 @@ private:
 
     Buffer inputBuffer_;
     Buffer outputBuffer_;
+    //记录最后活跃的时间
+    std::atomic<int64_t> lastReceiveTime_; 
 };
