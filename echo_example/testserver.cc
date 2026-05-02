@@ -31,7 +31,7 @@ private:
     void onConnection(const TcpConnectionPtr &conn)
     {
         std::weak_ptr<TcpConnection> weak_conn(conn);
-        loop_->runEvery(60.0,[this,weak_conn](){
+        loop_->runEvery(10.0,[this,weak_conn](){
             kickIdleConnection(weak_conn);
         });
         if(conn->connected()){
@@ -45,9 +45,9 @@ private:
         auto conn = weakConn.lock(); // 尝试提升
         if (conn) {
             int64_t now = Timestamp::now().microSecondsSinceEpoch();
-            int64_t lastActive = conn->lastReceiveTime(); // 你在 handleRead 里更新的变量
+            int64_t lastActive = conn->lastReceiveTime(); // handleRead 里更新的变量
             
-            if (now - lastActive > 60 * 1000 * 1000) { // 真正超过 60s 没动静
+            if (now - lastActive > 10 * 1000 * 1000) { // 真正超过 60s 没动静
                 LOG_INFO("Idle timeout, kick connection: %s", conn->peerAddress().toIpPort().c_str());
                 conn->shutdown();
             }
