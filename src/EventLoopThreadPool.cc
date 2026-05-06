@@ -32,7 +32,7 @@ EventLoop* EventLoopThreadPool::getNextLoop(){
     {
         loop=loops_[next_];
         ++next_;
-        if(next_>=loops_.size()){next_=0;}
+        if(next_>=static_cast<ssize_t>(loops_.size())){next_=0;}
     }
     return loop;
 }

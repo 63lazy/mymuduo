@@ -90,7 +90,7 @@ void TcpClient::removeConnection(const TcpConnectionPtr &conn){
     });
     //如果用户设置了retry_标志 且客户端没有手动stop()
     if(retry_&&connect_){
-        LOG_INFO("TcpClient::connect[%s] - Reconnecting to %s",connector_->getServerAddr().toIpPort());
+        LOG_INFO("TcpClient::connect[%s] - Reconnecting to %s",name_.c_str(),connector_->getServerAddr().toIpPort().c_str());
         connector_->restart();
     }
 }

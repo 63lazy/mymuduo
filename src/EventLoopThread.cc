@@ -7,9 +7,9 @@ EventLoopThread::EventLoopThread(const ThreadInitCallback &cb,
     ,thread_([this](){
         threadFunc();
     },name)
-    ,callback_(std::move(cb))
     ,mutex_()
     ,cond_()
+    ,callback_(std::move(cb))
     {}
 EventLoopThread::~EventLoopThread(){
     exit_=true;

@@ -108,7 +108,7 @@ void TcpConnection::sendInLoop(const void *data, size_t len){
     //说明一次write没发完 剩余数据保存到缓冲区供epoll监控唤醒
     if(!faultError && remaining>0){
         //目前缓冲区待发送数据
-        ssize_t oldlen = outputBuffer_.readableBytes();
+        size_t oldlen = outputBuffer_.readableBytes();
         if(oldlen+remaining>=highWaterMark_
             &&oldlen < highWaterMark_
             &&highWaterMarkCallback_)
@@ -208,7 +208,7 @@ void TcpConnection::handleWrite(){
             }
         }
         else{
-            LOG_ERROR("TcpConnection::handleWrite",channel_->fd());
+            LOG_ERROR("TcpConnection::handleWrite %d",channel_->fd());
         }
     }
     else{

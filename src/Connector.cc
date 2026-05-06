@@ -2,6 +2,7 @@
 #include "logger.h"
 #include "socket.h"
 #include <stdlib.h>
+#include <string>
 static int createNonblocking()
 {
     int sockfd = ::socket(AF_INET ,SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC,0);
@@ -20,8 +21,8 @@ static EventLoop *CheckloopNotNull(EventLoop *loop){
     return loop;
 }
 Connector::Connector(EventLoop *loop,InetAddress serverAddr):
-                     loop_(CheckloopNotNull(loop)),
                      addr_(serverAddr),
+                     loop_(CheckloopNotNull(loop)),                     
                      state_(kDisconnected),
                      connect_(false),
                      retryDelayMs_(500)
@@ -121,7 +122,7 @@ void Connector::retry(int sockfd){
     setState(kDisconnected);
 
     if(connect_){
-        LOG_INFO("Connector::retry - Retry connecting to %s in %d milliseconds", addr_.toIpPort(),retryDelayMs_);
+        LOG_INFO("Connector::retry - Retry connecting to %s in %d milliseconds", addr_.toIpPort().c_str(),retryDelayMs_);
         loop_->runAfter(retryDelayMs_/1000,[self=shared_from_this()](){
             self->start();
         });
