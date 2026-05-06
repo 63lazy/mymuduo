@@ -11,6 +11,7 @@ public:
     void bindAddress(const InetAddress &loacaladdr);
     void listen();
     int accept(InetAddress *peeraddr);
+    static int connect(int sockfd,const InetAddress* serverAddr);
 
     void shutdownWrite();
 

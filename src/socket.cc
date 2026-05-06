@@ -33,6 +33,10 @@ int Socket::accept(InetAddress *peeraddr){
     return connfd;
 }
 
+int Socket::connect(int sockfd,const InetAddress* serverAddr){
+    return ::connect(sockfd,(sockaddr*)serverAddr->getSockAddrInet(),static_cast<socklen_t>(sizeof(sockaddr_in)));
+}
+
 //TcpConnection::shutdownInLoop触发
 void Socket::shutdownWrite(){
     if(::shutdown(sockfd_,SHUT_WR)<0)

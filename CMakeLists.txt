@@ -38,6 +38,8 @@ add_library(mymuduo SHARED
     src/EventLoopThreadPool.cc 
     src/Timer.cc
     src/TimerQueue.cc
+    src/Connector.cc
+    src/TcpClient.cc
 )
 
 # 链接选项

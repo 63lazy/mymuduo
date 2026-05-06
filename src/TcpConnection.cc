@@ -141,7 +141,7 @@ void TcpConnection::shutdownInLoop()
         //关闭写端 会触发channel的closeCallback_即TcpConnection::handleClose
         socket_->shutdownWrite();   
     }
-    //如果没发完就等handleread函数最后再次调用shutdownInLoop
+    //如果没发完就等handleWrite函数最后再次调用shutdownInLoop
 }
 
 void TcpConnection::connectEstablished(){

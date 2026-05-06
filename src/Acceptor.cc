@@ -7,18 +7,14 @@
 #include <error.h>
 #include <unistd.h>
 
-namespace
-{//匿名空间保证createNonblocking函数只能在本文件中被调用
-    int createNonblocking()
+static int createNonblocking()
+{
+    int sockfd = ::socket(AF_INET ,SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC,0);
+    if(sockfd<0)
     {
-        int sockfd = ::socket(AF_INET ,SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC,0);
-        if(sockfd<0)
-        {
-            LOG_FATAL("%s:%s:%d listen socket create err:%d \n",__FILE__,__FUNCTION__,__LINE__,errno);
-        }
-        return sockfd;
+        LOG_FATAL("%s:%s:%d listen socket create err:%d \n",__FILE__,__FUNCTION__,__LINE__,errno);
     }
-    
+    return sockfd;
 }
 
 Acceptor::Acceptor(EventLoop *loop,const InetAddress &ListenAddr,bool reuseport)
