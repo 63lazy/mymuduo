@@ -14,7 +14,7 @@ static EventLoop *CheckloopNotNull(EventLoop *loop){
 }
 TcpClient::TcpClient(EventLoop *loop,InetAddress &serverAddr,std::string &name):
                      loop_(CheckloopNotNull(loop)),
-                     connector_(new Connector(loop,serverAddr)),
+                     connector_(std::make_shared<Connector>(loop,serverAddr)),
                      name_(name),
                      nexConnId_(1),
                      retry_(false),
@@ -32,6 +32,7 @@ void TcpClient::connect(){
 //与stop相比不禁用connector的连接与重连能力，仅仅断开当前连接
 void TcpClient::disconnect(){
     connect_=false;
+    //防止同时有handleCloes的调用删除了conn_对象
     TcpConnectionPtr conn;
     {
         std::lock_guard<std::mutex> lock(mutex_);

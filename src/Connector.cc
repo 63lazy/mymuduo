@@ -3,6 +3,8 @@
 #include "socket.h"
 #include <stdlib.h>
 #include <string>
+const int Connector::kInitRetryDelayMs;
+const int Connector::kMaxRetryDelayMs;
 static int createNonblocking()
 {
     int sockfd = ::socket(AF_INET ,SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC,0);
@@ -78,7 +80,7 @@ void Connector::connecting(int fd){
     channel_->enableWriting();
 }
 
-void Connector::handleWrite(){
+void Connector::hnadleWrite(){
     int err;
     socklen_t len=sizeof(err);
     int ret=::getsockopt(channel_->fd(),SOL_SOCKET, SO_ERROR, &err, &len);
@@ -158,6 +160,5 @@ void Connector::handleError(){
         err=errno;
     }
     LOG_ERROR("Connector::handleError - SO_ERROR: %d", err);
-    ::close(channel_->fd());
     retry(channel_->fd());
 }

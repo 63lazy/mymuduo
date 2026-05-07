@@ -31,10 +31,10 @@ public:
     ~TcpServer();
 
     void setThreadNum(int numThreads){threadpool_->setThreadNum(numThreads);}
-    void setThreadInitCallback(const ThreadInitCallback &cb){threadInitCallback_ = cb;}
-    void setConnectionCallback(const ConnectionCallback &cb){connectionCallback_ = cb;}
-    void setMessageCallback(const MessageCallback &cb){messageCallback_ = cb;}
-    void setWriteCompleteCallback(const WriteCompleteCallback &cb){writeCompleteCallback_ = cb;}
+    void setThreadInitCallback(const ThreadInitCallback cb){threadInitCallback_ = std::move(cb);}
+    void setConnectionCallback(const ConnectionCallback cb){connectionCallback_ = std::move(cb);}
+    void setMessageCallback(const MessageCallback cb){messageCallback_ = std::move(cb);}
+    void setWriteCompleteCallback(const WriteCompleteCallback cb){writeCompleteCallback_ = std::move(cb);}
     
     void start(); //开启acceptor的listen
 private:

@@ -44,6 +44,7 @@ void Channel::handleEvent(Timestamp recieveTime){
     }
 }
 //根据poller通知的channel发生的具体事件，由channel负责调用具体的回调操作
+//当由于异常断开连接时，返回的revents_回同时满足closeCallback_和errorCallback_两种情况
 void Channel::handleEventWithGuard(Timestamp recieveTime){
     LOG_INFO("Channel %d handleEventWithGuard revents=%d",fd_,revents_);
 

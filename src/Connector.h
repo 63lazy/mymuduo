@@ -5,7 +5,7 @@
 #include "noncopy.h"
 #include "memory"
 #include <atomic>
-class Connector :NonCopyable ,std::enable_shared_from_this<Connector>{
+class Connector :NonCopyable ,public std::enable_shared_from_this<Connector>{
 public:
     Connector(EventLoop *loop,InetAddress serverAddr);
     using NewConnectionCallback=std::function<void (int sockfd)>;
