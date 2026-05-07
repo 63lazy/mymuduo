@@ -80,7 +80,7 @@ void Connector::connecting(int fd){
     channel_->enableWriting();
 }
 
-void Connector::hnadleWrite(){
+void Connector::handleWrite(){
     int err;
     socklen_t len=sizeof(err);
     int ret=::getsockopt(channel_->fd(),SOL_SOCKET, SO_ERROR, &err, &len);
