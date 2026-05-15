@@ -20,12 +20,7 @@ public:
     void setMessageCallback(const MessageCallback cb){messageCallback_ = std::move(cb);}
     void setWriteCompleteCallback(const WriteCompleteCallback cb){writeCompleteCallback_ = std::move(cb);}
 
-    void send(std::string data){ 
-        if(conn_)
-            conn_->send(data); 
-        else
-            LOG_ERROR("Cannot send, connection is not established yet!");
-    }
+    bool send(Buffer *buf);
 private:
     void newConnection(int sockfd);
     void removeConnection(const TcpConnectionPtr &conn);

@@ -106,5 +106,22 @@ void TcpClient::stop(){
         std::lock_guard<std::mutex> lock(mutex_);
         conn=conn_;
     }
-    conn->shutdown();
+    if(conn)
+        conn->shutdown();
+}
+
+bool TcpClient::send(Buffer *buf){ 
+    TcpConnectionPtr conn;
+    {
+        std::unique_lock<std::mutex> lock(mutex_);
+        conn=conn_;
+    }
+    if(conn){
+        conn->send(buf); 
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }

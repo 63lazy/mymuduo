@@ -55,7 +55,6 @@ TcpConnection::~TcpConnection(){
     LOG_INFO("TcpConnection::dtor[%s] at fd=%d state=%d",
             name_.c_str(),channel_->fd(),(int)state_);
 }
-
 void TcpConnection::send(const std::string &buf)
 {
     if(state_==kConnected){
@@ -68,6 +67,20 @@ void TcpConnection::send(const std::string &buf)
             loop_->runInLoop([this,buf,guard=shared_from_this()](){
                 sendInLoop(buf.c_str(),buf.size());
             });
+        }
+    }
+}
+//直接传Buffer* 只能在非跨线程的情形下使用
+void TcpConnection::send(Buffer *buf)
+{
+    if(state_==kConnected){
+        //不跨线程直接执行
+        if(loop_->isInLoopThread()){
+            sendInLoop(buf->peek(),buf->readableBytes());
+            buf->retrieveAll();
+        }
+        else{//为了跨线程安全建议转成string
+            send(buf->retrieveAllAsString());
         }
     }
 }

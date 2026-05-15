@@ -5,6 +5,7 @@
 #include "Buffer.h"
 #include "Timestamp.h"
 #include <memory>
+#include <any>
 #include <string>
 #include <atomic>
 class Channel; 
@@ -28,6 +29,7 @@ public:
     bool connected() const {return state_ == kConnected;}
 
     void send(const std::string &buf);
+    void send(Buffer *buf);
     void shutdown();
 
 
@@ -49,8 +51,12 @@ public:
 
     //获取最后一次活跃的时间戳
     int64_t lastReceiveTime() const { return lastReceiveTime_.load(); }
-    
+
+    //获取context
+    void setContext(const std::any context){context_ = context;}  
+    std::any &getContext(){return context_;}
 private:
+
     enum StateE{kDisconnected,kConnecting,kConnected,kDisconnecting};
     void setState(StateE state){state_= state;}
 
@@ -86,4 +92,6 @@ private:
     Buffer outputBuffer_;
     //记录最后活跃的时间
     std::atomic<int64_t> lastReceiveTime_; 
+
+    std::any context_;
 };
